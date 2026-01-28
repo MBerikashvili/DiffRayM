@@ -1,0 +1,4 @@
+latex Tutorial.tex
+latex Tutorial.tex
+dvips -o Tutorial.ps Tutorial.dvi
+ps2pdf Tutorial.ps
