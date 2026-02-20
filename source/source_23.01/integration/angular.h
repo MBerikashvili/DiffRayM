@@ -7,6 +7,7 @@
 #include "../output/debugger.h"
 #include "../output/AnglesFileHandler.h"
 #include <vector>
+#include <chrono>
 
 class Angular {
     public:
@@ -17,7 +18,7 @@ class Angular {
 	AnglesFileHandler* anglesFileHandler;
 	std::vector<AngleStep> angleStepsToSerialize;
 
-	bool ReadWriteAnglesToFile = false;
+	bool ReadWriteAnglesToFile = true;
 	
 	//params are actual aperture constraints here
 	Angular(double cphi, double ctheta, double cdphi, double cdtheta, int nSteps, bool doIterationOverSource)
@@ -173,8 +174,11 @@ class Angular {
 		SMcenter = 0.;
 		CDebugger::log("Starting iterations");
 		
+
 		while(AngleCount > 0)
 		{
+			auto start = std::chrono::high_resolution_clock::now();
+
 			CDebugger::debug("AngleCount: %d (%d) ST: %d; nPhots: %le\n",AngleCount, acceptedCnt, CLine::iStat, nPhots);
 			double currentPhi = angles[AngleCount-1]->phi;
 			double currentTheta = angles[AngleCount-1]->theta;
@@ -230,6 +234,12 @@ class Angular {
 				}
 			}
 			CMatrix::freeMem();
+
+
+			auto end = std::chrono::high_resolution_clock::now();
+			auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+			CDebugger::log("TIME PASSED FOR ONE ITERATION: %d ms.\n", duration.count());
+
 		}
 		
 		if(ReadWriteAnglesToFile)
