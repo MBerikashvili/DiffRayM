@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "Debug DiffRay3D",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/source/source_23.01/DiffRay3D_Mykhailo.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "preLaunchTask": "Build with MakeFile.all"
+        }
+    ]
+}

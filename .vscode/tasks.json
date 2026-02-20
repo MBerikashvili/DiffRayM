@@ -1,0 +1,26 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build with MakeFile.all",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "-f",
+                "MakeFile.all"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/source/source_23.01" // Переходимо в папку з мейкфайлом
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        }
+    ]
+}

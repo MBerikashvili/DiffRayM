@@ -6,6 +6,7 @@
 #include <algorithm>
 #include "../output/debugger.h"
 #include "../output/AnglesFileHandler.h"
+#include <vector>
 
 class Angular {
     public:
@@ -14,6 +15,7 @@ class Angular {
 	int AngleCount;
 	double Vcenter, Scenter, SMcenter;
 	AnglesFileHandler* anglesFileHandler;
+	std::vector<AngleStep> angleStepsToSerialize;
 	
 	//params are actual aperture constraints here
 	Angular(double cphi, double ctheta, double cdphi, double cdtheta, int nSteps, bool doIterationOverSource)
@@ -172,7 +174,6 @@ class Angular {
 			double currentTheta = angles[AngleCount-1]->theta;
 			double currentDPhi = angles[AngleCount-1]->dphi;
 			double currentDTheta = angles[AngleCount-1]->dtheta;
-			AngleStep *angleStepToSerialize = angles[AngleCount-1];
 			removeLastPoint();
 			//now should setup matrix
 			CMatrix::setup(currentPhi, currentTheta, currentDPhi, currentDTheta);
@@ -209,8 +210,7 @@ class Angular {
 					Scenter += CMatrix::Scenter;
 					SMcenter += CMatrix::dS*App::distance*App::distance;
 				}
-
-				SerializeAngleStep(angleStepToSerialize);
+				angleStepsToSerialize.push_back(*angles[AngleCount-1]);
 			}
 			else
 			{
@@ -225,6 +225,8 @@ class Angular {
 			}
 			CMatrix::freeMem();
 		}
+
+		SerializeAngleSteps(angleStepsToSerialize);
 	}
 
 	bool TryGetAnglesFromFile()
@@ -239,9 +241,14 @@ class Angular {
 		return true;
 	}
 
-	void SerializeAngleStep()
+	void SerializeAngleSteps(std::vector<AngleStep> angleSteps)
 	{
-		// наразі воно перезаписує файл через цей аутпут. треба відкривати файл з прапором а а не w
-		anglesFileHandler->TryWriteAnglesToFile
+		auto success = anglesFileHandler->TryWriteAnglesToFile(angleSteps);
+		if(!success)
+		{
+			CDebugger::error("Could not write angle steps to file");
+			return;
+		}
+		CDebugger::log("Angle steps successfully written to file");
 	}
 };

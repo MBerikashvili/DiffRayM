@@ -13,8 +13,11 @@ class AnglesFileHandler : public Output
 {
 
 public:
-
-    AnglesFileHandler() : Output(fileName){}
+    
+    /// @brief Creates and AnglesFielHandler with its own specifics
+    /// @param mode file access mode. We use 'append+' whick allows
+    /// append data to the end of the file and read from this file
+    AnglesFileHandler(const char* mode = "a+") : Output(fileName, mode){}
 
     long TryGetAnglesFromFile(AngleStep** anglesContainer)
     {
@@ -41,7 +44,7 @@ public:
         return numberOfAnglesParsed;        
     }
 
-    bool TryWriteAnglesToFile(AngleStep** anglesContainer)
+    bool TryWriteAnglesToFile(std::vector<AngleStep> angleSteps)
     {
         // check if file is available
         bool fileCanBeWritten = TryWriteFile();
@@ -53,28 +56,28 @@ public:
         }
 
         // print data to file
-        long index = 0;
-        AngleStep* angleStep = anglesContainer[0];
         std::string angleStepString;
-        while (angleStep != nullptr)
+        auto angleStep = angleSteps.begin();
+        while (angleStep != angleSteps.end())
         {
-            bool serializedSuccessfully = TrySerializeAngleStep(angleStep, angleStepString);
+            bool serializedSuccessfully = TrySerializeAngleStep(&(*angleStep), angleStepString);
 
             if(!serializedSuccessfully)
             {
-                CDebugger::error("Couldn't serialize AngleStep to file. AngleStep index was: %d\n", index);
+                CDebugger::error("Couldn't serialize AngleStep to file. AngleStep index was: %d\n", 
+                                std::distance(angleSteps.begin(), angleStep));
                 break;
             }
 
             prt(angleStepString.c_str());
 
-            index++;
-            angleStep = anglesContainer[index];
+            ++angleStep;
         }
     }
 
     bool TryWriteAngleToFile(AngleStep *angleStep)
     {
+        std::string angleStepString;
         bool serializedSuccessfully = TrySerializeAngleStep(angleStep, angleStepString);
 
         if(!serializedSuccessfully)

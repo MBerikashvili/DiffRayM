@@ -1,5 +1,5 @@
 all:
-	rm ./*.exe ./*.o
+	-rm ./*.exe ./*.o
 	g++ -std=c++17 -c -O3 -Wall *.cpp integration/*.cpp output/*.cpp spectra/*.cpp statistics/*.cpp
 	g++ -o  DiffRay3D_Mykhailo.exe *.o -lm
 	cp DiffRay3D_Mykhailo.exe ../../launch_script/Mykhailo/DiffRay3D_Mykhailo.exe
