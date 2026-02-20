@@ -16,11 +16,14 @@ class Angular {
 	double Vcenter, Scenter, SMcenter;
 	AnglesFileHandler* anglesFileHandler;
 	std::vector<AngleStep> angleStepsToSerialize;
+
+	bool ReadWriteAnglesToFile = false;
 	
 	//params are actual aperture constraints here
 	Angular(double cphi, double ctheta, double cdphi, double cdtheta, int nSteps, bool doIterationOverSource)
 	{
-		anglesFileHandler = new AnglesFileHandler();
+		if(ReadWriteAnglesToFile)
+			anglesFileHandler = new AnglesFileHandler();
 		CDebugger::debug("Init angular obj %le %le; [%le;%le]\n", cphi, ctheta, cdphi, cdtheta);
 		phi = cphi;
 		theta = ctheta;
@@ -30,18 +33,21 @@ class Angular {
 		long double phiW = dphi/nSteps;
 		long double thetaW = dtheta/nSteps;
 		
-		bool dataPresentAndLoaded = TryGetAnglesFromFile();
-
-		if(!dataPresentAndLoaded)
+		if(ReadWriteAnglesToFile)
 		{
-			for(int ip = 0; ip < nSteps; ip++)
+			bool dataPresentAndLoaded = TryGetAnglesFromFile();
+
+			if(!dataPresentAndLoaded)
 			{
-				for(int it = 0; it < nSteps; it++)
+				for(int ip = 0; ip < nSteps; ip++)
 				{
-					CDebugger::debug("inserting points: %d\n", AngleCount);
-					long double aphi = cphi + (ip-(nSteps-1)/2)*phiW;
-					long double atheta = ctheta + (it-(nSteps-1)/2)*thetaW;
-					insertPoint(aphi, atheta, phiW, thetaW);
+					for(int it = 0; it < nSteps; it++)
+					{
+						CDebugger::debug("inserting points: %d\n", AngleCount);
+						long double aphi = cphi + (ip-(nSteps-1)/2)*phiW;
+						long double atheta = ctheta + (it-(nSteps-1)/2)*thetaW;
+						insertPoint(aphi, atheta, phiW, thetaW);
+					}
 				}
 			}
 		}
@@ -225,8 +231,9 @@ class Angular {
 			}
 			CMatrix::freeMem();
 		}
-
-		SerializeAngleSteps(angleStepsToSerialize);
+		
+		if(ReadWriteAnglesToFile)
+			SerializeAngleSteps(angleStepsToSerialize);
 	}
 
 	bool TryGetAnglesFromFile()
