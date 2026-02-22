@@ -17,12 +17,12 @@ public:
     /// @brief Creates and AnglesFielHandler with its own specifics
     /// @param mode file access mode. We use 'append+' whick allows
     /// append data to the end of the file and read from this file
-    AnglesFileHandler(const char* mode = "a+") : Output(fileName, mode){}
+    AnglesFileHandler(const char* mode = "w+") : Output("Angles.dat", mode){}
 
     long TryGetAnglesFromFile(AngleStep** anglesContainer)
     {
         // 1. read file
-        bool fileCanBeRead = TryReadFile();
+        bool fileCanBeRead = true; //TryReadFile();
 
         if(!fileCanBeRead)
         {
@@ -47,15 +47,16 @@ public:
     bool TryWriteAnglesToFile(std::vector<AngleStep> angleSteps)
     {
         // check if file is available
-        bool fileCanBeWritten = TryWriteFile();
+        bool fileCanBeWritten = true;// TryWriteFile();
 
         if(!fileCanBeWritten)
         {
-            CDebugger::log("Could not write AngleSteps from file - file is unavailable.\n");
+            CDebugger::error("Could not write AngleSteps to file - file is unavailable.\n");
             return false;
         }
 
         // print data to file
+        CDebugger::log("WRITING ANGLE STEPS. NUMBER OF ANGLE STEPS: %d", angleSteps.size());
         std::string angleStepString;
         auto angleStep = angleSteps.begin();
         while (angleStep != angleSteps.end())
@@ -68,13 +69,29 @@ public:
                                 std::distance(angleSteps.begin(), angleStep));
                 break;
             }
+            
+            CDebugger::log("ANGLE STEP SERIALIZED SUCCESFULLY");
 
-            prt(angleStepString.c_str());
+            //auto angleStepStringData = angleStepString.c_str();
+            //CDebugger::log("WRITING ANGLE STEP: %s", angleStepStringData);
+
+            auto success = prt("%s", angleStepString.c_str());
+
+            /*
+            if(success)
+                CDebugger::log("SUCCESSFULLY PRINTED");
+            else
+            {
+                CDebugger::error("UNSUCCESSFULLY PRINTED");
+                return false;
+            }
+            */
 
             ++angleStep;
         }
+        return true;
     }
-
+/*
     bool TryWriteAngleToFile(AngleStep *angleStep)
     {
         std::string angleStepString;
@@ -86,12 +103,12 @@ public:
         }
 
         prt(angleStepString.c_str());
-    }
+    }*/
 
 
 private:
 
-    char* fileName = "Angles.dat";
+    const char* fileName = "Angles.dat";
     char delimiter = '|';
 
     /// @brief Tries to open a file and checks is it is empty
@@ -103,6 +120,7 @@ private:
         // check if file exists
         if (!file.is_open()) 
         {
+            CDebugger::error("CAN'T READ FILE");
             return false; 
         }
 
@@ -117,29 +135,41 @@ private:
     /// @return false if couldn't open the file
     bool TryWriteFile()
     {
+        // this method created file in launch_scripts which is wrong
         std::ofstream file(fileName);
 
         if (!file.is_open())
         {
+            CDebugger::error("CAN'T WRITE TO FILE");
             return false;
         }
+        
+        CDebugger::log("FILE IS READY TO WRITE");
 
         file.close();
+        CDebugger::log("FILE CHECK IS FINISHED. FILE CLOSED");
         return true;
     }
 
     long TryParseAngles(AngleStep** anglesContainer)
     {
-        std::ifstream file(fileName);
+        char fullFileName[255];
+		sprintf(fullFileName, "%s/%s",App::output_dir, fileName);
+
+        CDebugger::log("FILE PATH TO READ ANGLES: %s", fullFileName);
+        
+        std::ifstream file(fullFileName);
         std::string line;
         long index = 0;
-
+        //char cline[20];
+        //file.getline(cline, 20);
+        //CDebugger::log("TEST: %s", cline);
         while(std::getline(file, line))
         {
+            CDebugger::log("READING LINE: %s", line.c_str());
             if(!TryDeserializeAngleStep(line, anglesContainer[index]))
             {
                 CDebugger::error("Couldn't deserialize AngleStep from file %s, line %d.\n", fileName, index);
-                
                 break;
             }
 
@@ -152,6 +182,7 @@ private:
 
     bool TryDeserializeAngleStep(const std::string& angleDataString, AngleStep* angleStepAddress)
     {
+        std::setlocale(LC_ALL, "C");
         std::stringstream ss(angleDataString);
         std::string token;
         double phi, theta, dphi, dtheta;
@@ -159,21 +190,27 @@ private:
         try
         {
             std::getline(ss, token, delimiter);
+            CDebugger::log("FIRST NUMBER (PHI) IS: '%s'", token.c_str());
             phi = std::stod(token);
 
             std::getline(ss, token, delimiter);
+            CDebugger::log("SECOND NUMBER (THETA) IS: '%s'", token.c_str());
             theta = std::stod(token);
 
             std::getline(ss, token, delimiter);
+            CDebugger::log("THIRD NUMBER (DPHI) IS: '%s'", token.c_str());
             dphi = std::stod(token);
 
             std::getline(ss, token, delimiter);
+            CDebugger::log("FOURTH NUMBER (DTHETA) IS: '%s'", token.c_str());
             dtheta = std::stod(token);
 
             // Clear the stream content
             ss.str("");   
             ss.clear();
 
+            CDebugger::log("Deserialized angle step: phi=%f; theta=%f; dphi=%; dtheta=%",
+                           phi, theta, dphi, dtheta);
             angleStepAddress = new AngleStep(phi, theta, dphi, dtheta);
         }
         catch(...)

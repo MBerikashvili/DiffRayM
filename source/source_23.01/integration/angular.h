@@ -17,14 +17,12 @@ class Angular {
 	double Vcenter, Scenter, SMcenter;
 	AnglesFileHandler* anglesFileHandler;
 	std::vector<AngleStep> angleStepsToSerialize;
-
-	bool ReadWriteAnglesToFile = true;
+	bool angleStepsLoadedFromFile = false;
+	bool angleSpepsFileMode = true;
 	
 	//params are actual aperture constraints here
 	Angular(double cphi, double ctheta, double cdphi, double cdtheta, int nSteps, bool doIterationOverSource)
 	{
-		if(ReadWriteAnglesToFile)
-			anglesFileHandler = new AnglesFileHandler();
 		CDebugger::debug("Init angular obj %le %le; [%le;%le]\n", cphi, ctheta, cdphi, cdtheta);
 		phi = cphi;
 		theta = ctheta;
@@ -34,11 +32,12 @@ class Angular {
 		long double phiW = dphi/nSteps;
 		long double thetaW = dtheta/nSteps;
 		
-		if(ReadWriteAnglesToFile)
+		if(angleSpepsFileMode)
 		{
-			bool dataPresentAndLoaded = TryGetAnglesFromFile();
+			anglesFileHandler = new AnglesFileHandler("r");
+			angleStepsLoadedFromFile = TryGetAnglesFromFile();
 
-			if(!dataPresentAndLoaded)
+			if(!angleStepsLoadedFromFile)
 			{
 				for(int ip = 0; ip < nSteps; ip++)
 				{
@@ -61,6 +60,7 @@ class Angular {
 				nDepth++;
 			sortByFi();
 		}
+		delete(anglesFileHandler);
 	}
 
 	bool sortByFi()
@@ -174,6 +174,7 @@ class Angular {
 		SMcenter = 0.;
 		CDebugger::log("Starting iterations");
 		
+		int stop_after = 10;
 
 		while(AngleCount > 0)
 		{
@@ -220,7 +221,8 @@ class Angular {
 					Scenter += CMatrix::Scenter;
 					SMcenter += CMatrix::dS*App::distance*App::distance;
 				}
-				angleStepsToSerialize.push_back(*angles[AngleCount-1]);
+				if(!angleStepsLoadedFromFile)
+					angleStepsToSerialize.push_back(*angles[AngleCount-1]);
 			}
 			else
 			{
@@ -240,10 +242,20 @@ class Angular {
 			auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 			CDebugger::log("TIME PASSED FOR ONE ITERATION: %d ms.\n", duration.count());
 
+
+			/*if(--stop_after <= 0)
+			{
+				CDebugger::warn("FORCEFULLY STOPPING ITERATIONS");
+				break;
+			}*/
+
 		}
 		
-		if(ReadWriteAnglesToFile)
+		if(angleSpepsFileMode && !angleStepsLoadedFromFile)
+		{
+			CDebugger::log("WRITING ANGLES TO FILE");
 			SerializeAngleSteps(angleStepsToSerialize);
+		}
 	}
 
 	bool TryGetAnglesFromFile()
@@ -260,6 +272,8 @@ class Angular {
 
 	void SerializeAngleSteps(std::vector<AngleStep> angleSteps)
 	{
+		anglesFileHandler = new AnglesFileHandler();
+		CDebugger::log("NUMBER OF ANGLE STEPS TO BE WRITTEN IS %d", angleSteps.size());
 		auto success = anglesFileHandler->TryWriteAnglesToFile(angleSteps);
 		if(!success)
 		{
@@ -267,5 +281,6 @@ class Angular {
 			return;
 		}
 		CDebugger::log("Angle steps successfully written to file");
+		delete(anglesFileHandler);
 	}
 };
