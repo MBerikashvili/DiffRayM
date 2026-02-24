@@ -70,7 +70,7 @@ public:
                 break;
             }
             
-            CDebugger::log("ANGLE STEP SERIALIZED SUCCESFULLY");
+            //CDebugger::log("ANGLE STEP SERIALIZED SUCCESFULLY");
 
             //auto angleStepStringData = angleStepString.c_str();
             //CDebugger::log("WRITING ANGLE STEP: %s", angleStepStringData);
@@ -91,7 +91,7 @@ public:
         }
         return true;
     }
-/*
+
     bool TryWriteAngleToFile(AngleStep *angleStep)
     {
         std::string angleStepString;
@@ -101,9 +101,12 @@ public:
         {
             CDebugger::error("Couldn't serialize AngleStep to file. AngleStep was: %d\n",0); // put here angle description
         }
+        else
+            CDebugger::log("ANGLE STEP SERIALIZED SUCCESFULLY");
 
-        prt(angleStepString.c_str());
-    }*/
+        prt("%s", angleStepString.c_str());
+        CDebugger::log("ANGLE STEP WRITTEN TO FILE SUCCESFULLY");
+    }
 
 
 private:
@@ -166,8 +169,8 @@ private:
         //CDebugger::log("TEST: %s", cline);
         while(std::getline(file, line))
         {
-            CDebugger::log("READING LINE: %s", line.c_str());
-            if(!TryDeserializeAngleStep(line, anglesContainer[index]))
+            //CDebugger::log("READING LINE: %s", line.c_str());
+            if(!TryDeserializeAngleStep(line, &anglesContainer[index]))
             {
                 CDebugger::error("Couldn't deserialize AngleStep from file %s, line %d.\n", fileName, index);
                 break;
@@ -180,7 +183,7 @@ private:
         return index;
     }
 
-    bool TryDeserializeAngleStep(const std::string& angleDataString, AngleStep* angleStepAddress)
+    bool TryDeserializeAngleStep(const std::string& angleDataString, AngleStep** angleStepAddress)
     {
         std::setlocale(LC_ALL, "C");
         std::stringstream ss(angleDataString);
@@ -190,28 +193,28 @@ private:
         try
         {
             std::getline(ss, token, delimiter);
-            CDebugger::log("FIRST NUMBER (PHI) IS: '%s'", token.c_str());
+            //CDebugger::log("FIRST NUMBER (PHI) IS: '%s'", token.c_str());
             phi = std::stod(token);
 
             std::getline(ss, token, delimiter);
-            CDebugger::log("SECOND NUMBER (THETA) IS: '%s'", token.c_str());
+            //CDebugger::log("SECOND NUMBER (THETA) IS: '%s'", token.c_str());
             theta = std::stod(token);
 
             std::getline(ss, token, delimiter);
-            CDebugger::log("THIRD NUMBER (DPHI) IS: '%s'", token.c_str());
+            //CDebugger::log("THIRD NUMBER (DPHI) IS: '%s'", token.c_str());
             dphi = std::stod(token);
 
             std::getline(ss, token, delimiter);
-            CDebugger::log("FOURTH NUMBER (DTHETA) IS: '%s'", token.c_str());
+            //CDebugger::log("FOURTH NUMBER (DTHETA) IS: '%s'", token.c_str());
             dtheta = std::stod(token);
 
             // Clear the stream content
             ss.str("");   
             ss.clear();
 
-            CDebugger::log("Deserialized angle step: phi=%f; theta=%f; dphi=%; dtheta=%",
-                           phi, theta, dphi, dtheta);
-            angleStepAddress = new AngleStep(phi, theta, dphi, dtheta);
+            //CDebugger::log("Deserialized angle step: phi=%f; theta=%f; dphi=%f; dtheta=%f",
+            //               phi, theta, dphi, dtheta);
+            *angleStepAddress = new AngleStep(phi, theta, dphi, dtheta);
         }
         catch(...)
         {
