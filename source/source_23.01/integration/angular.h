@@ -51,7 +51,7 @@ class Angular {
 				}
 			}
 		}
-		if(false)//App::usePredictiveMode)
+		if(App::usePredictiveMode)
 		{
 			//Run matrixes in predictive mode
 			CDebugger::debug("Predictive\n");
@@ -173,8 +173,9 @@ class Angular {
 		Scenter = 0.;
 		SMcenter = 0.;
 		CDebugger::log("Starting iterations");
+		AngleStep *temporalAngleStep;
 		
-		//int stop_after = 7000;
+		int stop_after = 100;
 
 		/*if(angleStepsFileMode && !angleStepsLoadedFromFile)
 		{
@@ -193,6 +194,9 @@ class Angular {
 			double currentTheta = angles[AngleCount-1]->theta;
 			double currentDPhi = angles[AngleCount-1]->dphi;
 			double currentDTheta = angles[AngleCount-1]->dtheta;
+
+			temporalAngleStep = angles[AngleCount-1];
+			removeLastPoint();
 			CDebugger::debug("Last point removed");
 			//now should setup matrix
 			CMatrix::setup(currentPhi, currentTheta, currentDPhi, currentDTheta);
@@ -235,9 +239,9 @@ class Angular {
 				if(angleStepsFileMode && !angleStepsLoadedFromFile)
 				{
 					//CDebugger::log("WRITING ANGLE TO FILE");
-					angleStepsToSerialize.push_back(*angles[AngleCount-1]);
+					angleStepsToSerialize.push_back(*temporalAngleStep);
 				}
-				//--stop_after;
+				--stop_after;
 			}
 			else
 			{
@@ -250,16 +254,14 @@ class Angular {
 					);
 				}
 			}
-
-			removeLastPoint();
 			CMatrix::freeMem();
 
 
-			/*if(stop_after <= 0)
+			if(stop_after <= 0)
 			{
 				CDebugger::warn("FORCEFULLY STOPPING ITERATIONS");
 				break;
-			}*/
+			}
 
 		}
 		
