@@ -18,10 +18,10 @@ class Angular {
 	AnglesFileHandler* anglesFileHandler;
 	std::vector<AngleStep> angleStepsToSerialize;
 	bool angleStepsLoadedFromFile = false;
-	bool angleStepsFileMode = true;
+	bool angleStepsFileMode;
 	
 	//params are actual aperture constraints here
-	Angular(double cphi, double ctheta, double cdphi, double cdtheta, int nSteps, bool doIterationOverSource)
+	Angular(double cphi, double ctheta, double cdphi, double cdtheta, int nSteps, bool doIterationOverSource, bool acceletratedMode = true)
 	{
 		CDebugger::debug("Init angular obj %le %le; [%le;%le]\n", cphi, ctheta, cdphi, cdtheta);
 		phi = cphi;
@@ -31,27 +31,29 @@ class Angular {
 		AngleCount = 0;
 		long double phiW = dphi/nSteps;
 		long double thetaW = dtheta/nSteps;
+		angleStepsFileMode = acceletratedMode;
 		
 		if(angleStepsFileMode)
 		{
 			anglesFileHandler = new AnglesFileHandler("r");
 			angleStepsLoadedFromFile = TryGetAnglesFromFile();
+		}
 
-			if(!angleStepsLoadedFromFile)
+		if(!angleStepsLoadedFromFile)
+		{
+			for(int ip = 0; ip < nSteps; ip++)
 			{
-				for(int ip = 0; ip < nSteps; ip++)
+				for(int it = 0; it < nSteps; it++)
 				{
-					for(int it = 0; it < nSteps; it++)
-					{
-						CDebugger::debug("inserting points: %d\n", AngleCount);
-						long double aphi = cphi + (ip-(nSteps-1)/2)*phiW;
-						long double atheta = ctheta + (it-(nSteps-1)/2)*thetaW;
-						insertPoint(aphi, atheta, phiW, thetaW);
-					}
+					CDebugger::debug("inserting points: %d\n", AngleCount);
+					long double aphi = cphi + (ip-(nSteps-1)/2)*phiW;
+					long double atheta = ctheta + (it-(nSteps-1)/2)*thetaW;
+					insertPoint(aphi, atheta, phiW, thetaW);
 				}
 			}
 		}
-		if(App::usePredictiveMode)
+		
+		if(!angleStepsFileMode && App::usePredictiveMode)
 		{
 			//Run matrixes in predictive mode
 			CDebugger::debug("Predictive\n");
@@ -172,15 +174,9 @@ class Angular {
 		Vcenter = 0.;
 		Scenter = 0.;
 		SMcenter = 0.;
+		double totalPhi = 0;
+		double totalTheta = 0;
 		CDebugger::log("Starting iterations");
-		AngleStep *temporalAngleStep;
-		
-		int stop_after = 100;
-
-		/*if(angleStepsFileMode && !angleStepsLoadedFromFile)
-		{
-			anglesFileHandler = new AnglesFileHandler("a+");
-		}*/
 		
 		auto start = std::chrono::high_resolution_clock::now();
 
@@ -189,13 +185,12 @@ class Angular {
 
 			CDebugger::debug("AngleCount: %d (%d) ST: %d; nPhots: %le\n",AngleCount, acceptedCnt, CLine::iStat, nPhots);
 			if(angles[AngleCount-1] == nullptr)
-				CDebugger::error("NULL BITCH");
+				CDebugger::error("LAST ANGLESTEP IS NULL");
 			double currentPhi = angles[AngleCount-1]->phi;
 			double currentTheta = angles[AngleCount-1]->theta;
 			double currentDPhi = angles[AngleCount-1]->dphi;
 			double currentDTheta = angles[AngleCount-1]->dtheta;
 
-			temporalAngleStep = angles[AngleCount-1];
 			removeLastPoint();
 			CDebugger::debug("Last point removed");
 			//now should setup matrix
@@ -234,14 +229,13 @@ class Angular {
 					Scenter += CMatrix::Scenter;
 					SMcenter += CMatrix::dS*App::distance*App::distance;
 				}
-				//if(!angleStepsLoadedFromFile)
-				//	angleStepsToSerialize.push_back(*angles[AngleCount-1]);
 				if(angleStepsFileMode && !angleStepsLoadedFromFile)
 				{
-					//CDebugger::log("WRITING ANGLE TO FILE");
-					angleStepsToSerialize.push_back(*temporalAngleStep);
+					auto tmpAS = new AngleStep(currentPhi, currentDTheta, currentDPhi, currentDTheta);
+					angleStepsToSerialize.push_back(*tmpAS);
 				}
-				--stop_after;
+				totalPhi += currentDPhi;
+				totalTheta += totalTheta;
 			}
 			else
 			{
@@ -257,26 +251,24 @@ class Angular {
 			CMatrix::freeMem();
 
 
-			if(stop_after <= 0)
+			/*if(stop_after <= 0)
 			{
 				CDebugger::warn("FORCEFULLY STOPPING ITERATIONS");
 				break;
-			}
+			}*/
 
 		}
-		
-		
 
 		auto end = std::chrono::high_resolution_clock::now();
 		auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
 		CDebugger::log("TIME PASSED FOR ITERATIONS: %d s.\n", duration.count());
+		CDebugger::log("Total phi = %le degrees. Total theta = %le degrees.", totalPhi, totalTheta);
 		
 		if(angleStepsFileMode && !angleStepsLoadedFromFile)
 		{
 			CDebugger::log("WRITING ANGLES TO FILE");
 			SerializeAngleSteps(angleStepsToSerialize);
 		}
-		exit(1);
 	}
 
 	bool TryGetAnglesFromFile()
