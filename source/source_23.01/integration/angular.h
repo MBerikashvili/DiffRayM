@@ -231,7 +231,7 @@ class Angular {
 				}
 				if(angleStepsFileMode && !angleStepsLoadedFromFile)
 				{
-					auto tmpAS = new AngleStep(currentPhi, currentDTheta, currentDPhi, currentDTheta);
+					auto tmpAS = new AngleStep(currentPhi, currentTheta, currentDPhi, currentDTheta);
 					angleStepsToSerialize.push_back(*tmpAS);
 				}
 				totalPhi += currentDPhi;
