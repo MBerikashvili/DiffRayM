@@ -1,4 +1,5 @@
 #pragma once
+#define _USE_MATH_DEFINES
 #include "AngleStep.h"
 #include "matrix.h"
 #include "../app.h"
@@ -8,6 +9,8 @@
 #include "../output/AnglesFileHandler.h"
 #include <vector>
 #include <chrono>
+#include <cmath>
+
 
 class Angular {
     public:
@@ -174,8 +177,7 @@ class Angular {
 		Vcenter = 0.;
 		Scenter = 0.;
 		SMcenter = 0.;
-		double totalPhi = 0;
-		double totalTheta = 0;
+		double totalBodyAngle = 0;
 		CDebugger::log("Starting iterations");
 		
 		auto start = std::chrono::high_resolution_clock::now();
@@ -234,8 +236,7 @@ class Angular {
 					auto tmpAS = new AngleStep(currentPhi, currentTheta, currentDPhi, currentDTheta);
 					angleStepsToSerialize.push_back(*tmpAS);
 				}
-				totalPhi += currentDPhi;
-				totalTheta += totalTheta;
+				totalBodyAngle += currentDPhi * (std::cos(currentTheta) - std::cos(currentTheta + currentDTheta));
 			}
 			else
 			{
@@ -262,7 +263,7 @@ class Angular {
 		auto end = std::chrono::high_resolution_clock::now();
 		auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
 		CDebugger::log("TIME PASSED FOR ITERATIONS: %d s.\n", duration.count());
-		CDebugger::log("Total phi = %le degrees. Total theta = %le degrees.", totalPhi, totalTheta);
+		CDebugger::log("Total body angle of the object = %le *pi radians.", totalBodyAngle/M_PI);
 		
 		if(angleStepsFileMode && !angleStepsLoadedFromFile)
 		{
