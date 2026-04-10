@@ -178,6 +178,7 @@ class Angular {
 		Scenter = 0.;
 		SMcenter = 0.;
 		double totalBodyAngle = 0;
+		int numberOfAnglesProcessed = 0;
 		CDebugger::log("Starting iterations");
 		
 		auto start = std::chrono::high_resolution_clock::now();
@@ -237,6 +238,7 @@ class Angular {
 					angleStepsToSerialize.push_back(*tmpAS);
 				}
 				totalBodyAngle += currentDPhi * (std::cos(currentTheta) - std::cos(currentTheta + currentDTheta));
+				numberOfAnglesProcessed++;
 			}
 			else
 			{
@@ -262,8 +264,12 @@ class Angular {
 
 		auto end = std::chrono::high_resolution_clock::now();
 		auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
+		std::string filename = "./Logs/" + std::to_string(end.time_since_epoch().count()) + ".log";
+
 		CDebugger::log("TIME PASSED FOR ITERATIONS: %d s.\n", duration.count());
-		CDebugger::log("Total body angle of the object = %le *pi radians.", totalBodyAngle/M_PI);
+		CDebugger::writeToFile(filename.c_str(), "TIME PASSED FOR ITERATIONS: %d s.\n", duration.count());
+		CDebugger::log("Total body angle of the object = %le *pi radians.", totalBodyAngle/M_PI); 
+		CDebugger::writeToFile(filename.c_str(), "Total body angle of the object = %le *pi radians.", totalBodyAngle/M_PI); 
 		
 		if(angleStepsFileMode && !angleStepsLoadedFromFile)
 		{

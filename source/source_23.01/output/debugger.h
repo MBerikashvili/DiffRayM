@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 #include "../basics.h"
 
 class CDebugger
@@ -11,4 +12,6 @@ public:
 	static void log(const char* format, ...);
 	static void warn(const char* format, ...);
 	static void error(const char* format, ...);
+
+	static void writeToFile(const char* filename, const char* format, ...);
 };
