@@ -202,7 +202,8 @@ int CIntegration::doCalc()
 		fflush(stdout);
 		App::rayIntegration = App::rayToObj;
 		CBasics::startClock();
-		Angular* stepIterator = new Angular(App::rayIntegration.angle.y + App::AppDPhi, App::rayIntegration.angle.z + App::AppDTheta, App::phi_width, App::theta_width, 5, doIterationsOverSource);
+		Angular *stepIterator = new Angular(App::rayIntegration.angle.y + App::AppDPhi, App::rayIntegration.angle.z + App::AppDTheta, App::phi_width, 
+											App::theta_width, 5, doIterationsOverSource, App::anglesFileMode);
 		CDebugger::debug("Starting integration flow\n");
 		fflush(stdout);
 		printf("Iterate\n");

@@ -19,12 +19,11 @@ class Angular {
 	int AngleCount;
 	double Vcenter, Scenter, SMcenter;
 	AnglesFileHandler* anglesFileHandler;
-	std::vector<AngleStep> angleStepsToSerialize;
 	bool angleStepsLoadedFromFile = false;
 	bool angleStepsFileMode;
 	
 	//params are actual aperture constraints here
-	Angular(double cphi, double ctheta, double cdphi, double cdtheta, int nSteps, bool doIterationOverSource, bool acceletratedMode = true)
+	Angular(double cphi, double ctheta, double cdphi, double cdtheta, int nSteps, bool doIterationOverSource, bool acceletratedMode = false)
 	{
 		CDebugger::debug("Init angular obj %le %le; [%le;%le]\n", cphi, ctheta, cdphi, cdtheta);
 		phi = cphi;
@@ -177,7 +176,9 @@ class Angular {
 		Vcenter = 0.;
 		Scenter = 0.;
 		SMcenter = 0.;
+		std::vector<AngleStep> angleStepsToSerialize;
 		double totalBodyAngle = 0;
+		double totalBodyAngleSimple = 0;
 		int numberOfAnglesProcessed = 0;
 		CDebugger::log("Starting iterations");
 		
@@ -232,12 +233,13 @@ class Angular {
 					Scenter += CMatrix::Scenter;
 					SMcenter += CMatrix::dS*App::distance*App::distance;
 				}
-				if(angleStepsFileMode && !angleStepsLoadedFromFile)
+				if(angleStepsFileMode)// && !angleStepsLoadedFromFile)
 				{
 					auto tmpAS = new AngleStep(currentPhi, currentTheta, currentDPhi, currentDTheta);
 					angleStepsToSerialize.push_back(*tmpAS);
 				}
-				totalBodyAngle += currentDPhi * (std::cos(currentTheta) - std::cos(currentTheta + currentDTheta));
+				totalBodyAngleSimple += currentDPhi * currentDTheta * std::sin(abs(currentTheta));
+				totalBodyAngle += currentDPhi * (std::cos(abs(currentTheta)) - std::cos(abs(currentTheta) + currentDTheta));
 				numberOfAnglesProcessed++;
 			}
 			else
@@ -266,12 +268,22 @@ class Angular {
 		auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
 		std::string filename = "./Logs/" + std::to_string(end.time_since_epoch().count()) + ".log";
 
+		CDebugger::log("NUMBER OF PROCESSED ANGLES: %d", numberOfAnglesProcessed);
+		CDebugger::writeToFile(filename.c_str(), "NUMBER OF PROCESSED ANGLES: %d", numberOfAnglesProcessed);
+
 		CDebugger::log("TIME PASSED FOR ITERATIONS: %d s.\n", duration.count());
 		CDebugger::writeToFile(filename.c_str(), "TIME PASSED FOR ITERATIONS: %d s.\n", duration.count());
-		CDebugger::log("Total body angle of the object = %le *pi radians.", totalBodyAngle/M_PI); 
-		CDebugger::writeToFile(filename.c_str(), "Total body angle of the object = %le *pi radians.", totalBodyAngle/M_PI); 
+
+		CDebugger::log("TIME FOR ONE ANGLE: %le", float(duration.count())/float(numberOfAnglesProcessed));
+		CDebugger::writeToFile(filename.c_str(), "TIME FOR ONE ANGLE: %le", float(duration.count())/float(numberOfAnglesProcessed));
+
+		CDebugger::log("Total body angle of the object = %le *pi radians.", totalBodyAngle/M_PI);
+		CDebugger::writeToFile(filename.c_str(), "Total body angle of the object = %le *pi radians.", totalBodyAngle/M_PI);
+
+		CDebugger::log("Total body angle of the object (simple equasion) = %le *pi radians.", totalBodyAngleSimple/M_PI);
+		CDebugger::writeToFile(filename.c_str(), "Total body angle of the object (simple equasion) = %le *pi radians.", totalBodyAngleSimple/M_PI);
 		
-		if(angleStepsFileMode && !angleStepsLoadedFromFile)
+		if(angleStepsFileMode)// && !angleStepsLoadedFromFile)
 		{
 			CDebugger::log("WRITING ANGLES TO FILE");
 			SerializeAngleSteps(angleStepsToSerialize);

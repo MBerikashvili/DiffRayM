@@ -8,6 +8,7 @@
 #include "../integration/AngleStep.h"
 #include "../integration/angular.h"
 #include "./debugger.h"
+#include "../app.h"
 
 class AnglesFileHandler : public Output
 {
@@ -17,7 +18,7 @@ public:
     /// @brief Creates and AnglesFielHandler with its own specifics
     /// @param mode file access mode. We use 'append+' whick allows
     /// append data to the end of the file and read from this file
-    AnglesFileHandler(const char* mode = "w+") : Output("Angles.dat", mode){}
+    AnglesFileHandler(const char* mode = "w+") : Output(App::anglesOutput, mode){}
 
     long TryGetAnglesFromFile(AngleStep** anglesContainer)
     {

@@ -50,6 +50,9 @@ public:
 	static int nSkipPoints;
 	static char fluxesOutput[255];
 
+	static char anglesOutput[255];
+	static bool anglesFileMode;
+
 	
 	static bool init();
 	static bool setRay(double phi, double theta);

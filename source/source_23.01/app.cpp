@@ -72,6 +72,9 @@ int App::onlySectorNo = -1;
 int App::coverSector = -1;
 bool App::isIrregularSource = false;
 
+char App::anglesOutput[255];
+bool App::anglesFileMode;
+
 bool App::addApperture(double phi, double theta, double dphi, double dtheta){
 	
 	App::AppMode = 1;
@@ -362,6 +365,20 @@ bool App::readCommands()
 					CDebugger::init(0);
 				}
 								
+			}
+			else if(strcmp(commands[1], "angles") == 0)
+			{
+				sscanf(commands[2], "%s", &App::anglesOutput);
+				
+				if(strcmp(commands[3],"on") == 0)
+				{
+					App::anglesFileMode = true;
+				}
+				else
+				{
+					App::anglesFileMode = false;
+					printf("Angles file mode off");
+				}
 			}
 		}
 		else
