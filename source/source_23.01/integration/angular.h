@@ -277,11 +277,8 @@ class Angular {
 		CDebugger::log("TIME FOR ONE ANGLE: %le", float(duration.count())/float(numberOfAnglesProcessed));
 		CDebugger::writeToFile(filename.c_str(), "TIME FOR ONE ANGLE: %le", float(duration.count())/float(numberOfAnglesProcessed));
 
-		CDebugger::log("Total body angle of the object = %le *pi radians.", totalBodyAngle/M_PI);
-		CDebugger::writeToFile(filename.c_str(), "Total body angle of the object = %le *pi radians.", totalBodyAngle/M_PI);
-
-		CDebugger::log("Total body angle of the object (simple equasion) = %le *pi radians.", totalBodyAngleSimple/M_PI);
-		CDebugger::writeToFile(filename.c_str(), "Total body angle of the object (simple equasion) = %le *pi radians.", totalBodyAngleSimple/M_PI);
+		CDebugger::log("Total body angle of the object = %le *pi radians.", totalBodyAngleSimple/M_PI);
+		CDebugger::writeToFile(filename.c_str(), "Total body angle of the object = %le *pi radians.", totalBodyAngleSimple/M_PI);
 		
 		if(angleStepsFileMode)// && !angleStepsLoadedFromFile)
 		{
