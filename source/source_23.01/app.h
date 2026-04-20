@@ -52,6 +52,7 @@ public:
 
 	static char anglesOutput[255];
 	static bool anglesFileMode;
+	static char anglesLogsDirectory[255];
 
 	
 	static bool init();

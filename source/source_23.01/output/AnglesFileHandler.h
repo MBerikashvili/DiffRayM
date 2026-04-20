@@ -10,26 +10,33 @@
 #include "./debugger.h"
 #include "../app.h"
 
-class AnglesFileHandler : public Output
+class AnglesFileHandler
 {
+
+Output* anglesOutput;
 
 public:
     
     /// @brief Creates and AnglesFielHandler with its own specifics
     /// @param mode file access mode. We use 'append+' whick allows
     /// append data to the end of the file and read from this file
-    AnglesFileHandler(const char* mode = "w+") : Output(App::anglesOutput, mode){}
+    /*AnglesFileHandler(const char* mode = "w+")
+    {
+        anglesOutput = new Output(App::anglesOutput, mode);
+    }*/
 
     long TryGetAnglesFromFile(AngleStep** anglesContainer)
     {
         // 1. read file
-        bool fileCanBeRead = true; //TryReadFile();
+        bool fileCanBeRead = TryReadFile();
 
         if(!fileCanBeRead)
         {
-            CDebugger::log("Could not read AngleSteps from file - file is absent or empty.\n");
-            return false;
+            CreateFile();
+            CDebugger::log("Creating new file for angles");
         }
+        
+        anglesOutput = new Output(App::anglesOutput, "w+");
 
         // 2. parse data
         long numberOfAnglesParsed = TryParseAngles(anglesContainer);
@@ -70,23 +77,8 @@ public:
                                 std::distance(angleSteps.begin(), angleStep));
                 break;
             }
-            
-            //CDebugger::log("ANGLE STEP SERIALIZED SUCCESFULLY");
 
-            //auto angleStepStringData = angleStepString.c_str();
-            //CDebugger::log("WRITING ANGLE STEP: %s", angleStepStringData);
-
-            auto success = prt("%s", angleStepString.c_str());
-
-            /*
-            if(success)
-                CDebugger::log("SUCCESSFULLY PRINTED");
-            else
-            {
-                CDebugger::error("UNSUCCESSFULLY PRINTED");
-                return false;
-            }
-            */
+            auto success = anglesOutput->prt("%s", angleStepString.c_str());
 
             ++angleStep;
         }
@@ -105,8 +97,13 @@ public:
         else
             CDebugger::log("ANGLE STEP SERIALIZED SUCCESFULLY");
 
-        prt("%s", angleStepString.c_str());
+        anglesOutput->prt("%s", angleStepString.c_str());
         CDebugger::log("ANGLE STEP WRITTEN TO FILE SUCCESFULLY");
+    }
+    
+    ~AnglesFileHandler()
+    {
+        delete(anglesOutput);
     }
 
 
@@ -121,8 +118,7 @@ private:
     {
         std::ifstream file(fileName, std::ios::ate);
 
-        // check if file exists
-        if (!file.is_open()) 
+        if(!file.is_open())
         {
             CDebugger::error("CAN'T READ FILE");
             return false; 
@@ -133,6 +129,13 @@ private:
         
         file.close();
         return size > 0;
+    }
+
+    void CreateFile()
+    {
+        std::string path = std::string(App::output_dir) + std::string(fileName); 
+        std::ofstream newFile(path);
+        newFile.close();
     }
 
     /// @brief Tries to open the file for writing

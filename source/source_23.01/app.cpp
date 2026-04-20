@@ -74,6 +74,7 @@ bool App::isIrregularSource = false;
 
 char App::anglesOutput[255];
 bool App::anglesFileMode;
+char App::anglesLogsDirectory[255];
 
 bool App::addApperture(double phi, double theta, double dphi, double dtheta){
 	
@@ -132,6 +133,14 @@ bool App::initAperture(int i)
 	{
     		/* Directory does not exist. EEXIST for race condition */
     		mkdir(App::output_dir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+	}
+
+	DIR *anglesLogsDir;
+
+	anglesLogsDir = opendir(App::anglesLogsDirectory);
+	if(anglesLogsDir == NULL || !anglesLogsDir)
+	{
+		mkdir(App::anglesLogsDirectory, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 	}
 
 	App::init();
@@ -379,6 +388,10 @@ bool App::readCommands()
 					App::anglesFileMode = false;
 					printf("Angles file mode off");
 				}
+			}
+			else if(strcmp(commands[1], "angles_logs") == 0)
+			{
+				sscanf(commands[2], "%s", &App::anglesLogsDirectory);
 			}
 		}
 		else
