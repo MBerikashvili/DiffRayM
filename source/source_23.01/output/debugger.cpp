@@ -2,6 +2,7 @@
 #include <vector>
 #include <fstream>
 #include "debugger.h"
+#include <sstream>
 
 int CDebugger::level = 1;
 
@@ -68,26 +69,23 @@ void CDebugger::error(const char *format, ...)
 	va_end(ap);
 }
 
-void CDebugger::writeToFile(const char* filename, const char* format, ...) {
-        // 1. Обробка списку аргументів (ваші старі знайомі)
+void CDebugger::writeToFile(std::time_t time, const char* format, ...) {
         va_list args;
-        
-        // --- КРОК 1: Визначаємо довжину повідомлення ---
         va_start(args, format);
-        // vsnprintf з nullptr замість буфера повертає кількість символів, які б записалися
         int size = vsnprintf(nullptr, 0, format, args);
         va_end(args);
 
-        if (size <= 0) return; // Якщо щось пішло не так
+        if (size <= 0) return;
 
-        // --- КРОК 2: Форматуємо рядок у тимчасовий буфер ---
-        std::vector<char> buffer(size + 1); // +1 для нуль-термінатора \0
+        std::vector<char> buffer(size + 1);
         va_start(args, format);
         vsnprintf(buffer.data(), buffer.size(), format, args);
         va_end(args);
+		
+		std::stringstream ss;
+		ss << std::put_time(std::localtime(&time), "./Logs/%d-%m-%Y %H:%M:%S");
 
-        // Запис у файл
-        std::ofstream file(filename, std::ios::app);
+        std::ofstream file(ss.str(), std::ios::app);
         if (file.is_open()) {
             file << buffer.data() << std::endl;
             file.close();

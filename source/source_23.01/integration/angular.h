@@ -9,6 +9,7 @@
 #include "../output/AnglesFileHandler.h"
 #include <vector>
 #include <chrono>
+#include <iomanip>
 #include <cmath>
 
 
@@ -266,19 +267,19 @@ class Angular {
 
 		auto end = std::chrono::high_resolution_clock::now();
 		auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
-		std::string filename = "./Logs/" + std::to_string(end.time_since_epoch().count()) + ".log";
+		std::time_t time = std::chrono::system_clock::to_time_t(end);
 
 		CDebugger::log("NUMBER OF PROCESSED ANGLES: %d", numberOfAnglesProcessed);
-		CDebugger::writeToFile(filename.c_str(), "NUMBER OF PROCESSED ANGLES: %d", numberOfAnglesProcessed);
+		CDebugger::writeToFile(time, "NUMBER OF PROCESSED ANGLES: %d", numberOfAnglesProcessed);
 
 		CDebugger::log("TIME PASSED FOR ITERATIONS: %d s.\n", duration.count());
-		CDebugger::writeToFile(filename.c_str(), "TIME PASSED FOR ITERATIONS: %d s.\n", duration.count());
+		CDebugger::writeToFile(time, "TIME PASSED FOR ITERATIONS: %d s.\n", duration.count());
 
 		CDebugger::log("TIME FOR ONE ANGLE: %le", float(duration.count())/float(numberOfAnglesProcessed));
-		CDebugger::writeToFile(filename.c_str(), "TIME FOR ONE ANGLE: %le", float(duration.count())/float(numberOfAnglesProcessed));
+		CDebugger::writeToFile(time, "TIME FOR ONE ANGLE: %le", float(duration.count())/float(numberOfAnglesProcessed));
 
 		CDebugger::log("Total body angle of the object = %le *pi radians.", totalBodyAngleSimple/M_PI);
-		CDebugger::writeToFile(filename.c_str(), "Total body angle of the object = %le *pi radians.", totalBodyAngleSimple/M_PI);
+		CDebugger::writeToFile(time, "Total body angle of the object = %le *pi radians.", totalBodyAngleSimple/M_PI);
 		
 		if(angleStepsFileMode)// && !angleStepsLoadedFromFile)
 		{
@@ -286,6 +287,7 @@ class Angular {
 			SerializeAngleSteps(angleStepsToSerialize);
 		}
 	}
+
 
 	bool TryGetAnglesFromFile()
 	{

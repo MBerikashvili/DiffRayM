@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "../basics.h"
+#include <iomanip>
 
 class CDebugger
 {
@@ -13,5 +14,5 @@ public:
 	static void warn(const char* format, ...);
 	static void error(const char* format, ...);
 
-	static void writeToFile(const char* filename, const char* format, ...);
+	static void writeToFile(std::time_t time, const char* format, ...);
 };
