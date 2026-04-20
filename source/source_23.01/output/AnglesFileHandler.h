@@ -13,8 +13,6 @@
 class AnglesFileHandler
 {
 
-Output* anglesOutput;
-
 public:
     
     /// @brief Creates and AnglesFielHandler with its own specifics
@@ -36,8 +34,6 @@ public:
             CDebugger::log("Creating new file for angles");
         }
         
-        anglesOutput = new Output(App::anglesOutput, "w+");
-
         // 2. parse data
         long numberOfAnglesParsed = TryParseAngles(anglesContainer);
         if(numberOfAnglesParsed == 0)
@@ -56,6 +52,8 @@ public:
     {
         // check if file is available
         bool fileCanBeWritten = true;// TryWriteFile();
+        
+        Output* anglesOutput = new Output(App::anglesOutput, "w+");
 
         if(!fileCanBeWritten)
         {
@@ -82,41 +80,21 @@ public:
 
             ++angleStep;
         }
-        return true;
-    }
 
-    bool TryWriteAngleToFile(AngleStep *angleStep)
-    {
-        std::string angleStepString;
-        bool serializedSuccessfully = TrySerializeAngleStep(angleStep, angleStepString);
-
-        if(!serializedSuccessfully)
-        {
-            CDebugger::error("Couldn't serialize AngleStep to file. AngleStep was: %d\n",0); // put here angle description
-        }
-        else
-            CDebugger::log("ANGLE STEP SERIALIZED SUCCESFULLY");
-
-        anglesOutput->prt("%s", angleStepString.c_str());
-        CDebugger::log("ANGLE STEP WRITTEN TO FILE SUCCESFULLY");
-    }
-    
-    ~AnglesFileHandler()
-    {
         delete(anglesOutput);
+        return true;
     }
 
 
 private:
 
-    const char* fileName = "Angles.dat";
     char delimiter = '|';
 
     /// @brief Tries to open a file and checks is it is empty
     /// @return false if file absent or empty
     bool TryReadFile()
     {
-        std::ifstream file(fileName, std::ios::ate);
+        std::ifstream file(App::anglesOutput, std::ios::ate);
 
         if(!file.is_open())
         {
@@ -133,7 +111,7 @@ private:
 
     void CreateFile()
     {
-        std::string path = std::string(App::output_dir) + std::string(fileName); 
+        std::string path = std::string(App::output_dir) + std::string(App::anglesOutput); 
         std::ofstream newFile(path);
         newFile.close();
     }
@@ -142,8 +120,7 @@ private:
     /// @return false if couldn't open the file
     bool TryWriteFile()
     {
-        // this method created file in launch_scripts which is wrong
-        std::ofstream file(fileName);
+        std::ofstream file(App::anglesOutput);
 
         if (!file.is_open())
         {
@@ -161,7 +138,7 @@ private:
     long TryParseAngles(AngleStep** anglesContainer)
     {
         char fullFileName[255];
-		sprintf(fullFileName, "%s/%s",App::output_dir, fileName);
+		sprintf(fullFileName, "%s/%s",App::output_dir, App::anglesOutput);
 
         CDebugger::log("FILE PATH TO READ ANGLES: %s", fullFileName);
         
@@ -176,7 +153,7 @@ private:
             //CDebugger::log("READING LINE: %s", line.c_str());
             if(!TryDeserializeAngleStep(line, &anglesContainer[index]))
             {
-                CDebugger::error("Couldn't deserialize AngleStep from file %s, line %d.\n", fileName, index);
+                CDebugger::error("Couldn't deserialize AngleStep from file %s, line %d.\n", App::anglesOutput, index);
                 break;
             }
 

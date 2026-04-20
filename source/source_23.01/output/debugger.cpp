@@ -3,6 +3,7 @@
 #include <fstream>
 #include "debugger.h"
 #include <sstream>
+#include "../app.h"
 
 int CDebugger::level = 1;
 
@@ -81,11 +82,13 @@ void CDebugger::writeToFile(std::time_t time, const char* format, ...) {
         va_start(args, format);
         vsnprintf(buffer.data(), buffer.size(), format, args);
         va_end(args);
-		
-		std::stringstream ss;
-		ss << std::put_time(std::localtime(&time), "./Logs/%d-%m-%Y %H:%M:%S");
 
-        std::ofstream file(ss.str(), std::ios::app);
+		std::stringstream filename;
+		filename << std::put_time(std::localtime(&time), "/%d-%m-%Y %H:%M:%S");
+
+		std::string path = std::string(App::anglesLogsDirectory) + filename.str();
+
+        std::ofstream file(path, std::ios::app);
         if (file.is_open()) {
             file << buffer.data() << std::endl;
             file.close();

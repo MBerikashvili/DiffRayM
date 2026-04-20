@@ -188,6 +188,7 @@ class Angular {
 		
 		auto start = std::chrono::high_resolution_clock::now();
 
+		//int stop_after = 50;
 		while(angleCount > 0)
 		{
 			iterationCount++;
@@ -245,6 +246,8 @@ class Angular {
 				totalBodyAngleSimple += currentDPhi * currentDTheta * std::sin(abs(currentTheta));
 				totalBodyAngle += currentDPhi * (std::cos(abs(currentTheta)) - std::cos(abs(currentTheta) + currentDTheta));
 				numberOfAnglesProcessed++;
+
+				//stop_after--;
 			}
 			else
 			{
@@ -258,13 +261,14 @@ class Angular {
 				}
 			}
 			CMatrix::freeMem();
-
-
-			/*if(stop_after <= 0)
+			
+			/*
+			if(stop_after <= 0)
 			{
 				CDebugger::warn("FORCEFULLY STOPPING ITERATIONS");
 				break;
-			}*/
+			}
+			*/
 
 		}
 
@@ -330,16 +334,5 @@ class Angular {
 		}
 		CDebugger::log("Angle steps successfully written to file");
 		delete(anglesFileHandler);
-	}
-
-	void SerializeAngleStep(AngleStep *angleStep)
-	{
-		auto success = anglesFileHandler->TryWriteAngleToFile(angleStep);
-		if(!success)
-		{
-			CDebugger::error("Could not write angle step to file");
-			return;
-		}
-		CDebugger::log("Angle step successfully written to file");
 	}
 };
