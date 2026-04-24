@@ -26,7 +26,7 @@ class Angular {
 	long iterationCount = 0;
 	
 	//params are actual aperture constraints here
-	Angular(double cphi, double ctheta, double cdphi, double cdtheta, int nSteps, bool doIterationOverSource, bool acceletratedMode = false)
+	Angular(double cphi, double ctheta, double cdphi, double cdtheta, int nSteps, bool doIterationOverSource, bool acceletratedMode = true)
 	{
 		CDebugger::debug("Init angular obj %le %le; [%le;%le]\n", cphi, ctheta, cdphi, cdtheta);
 		phi = cphi;
@@ -68,7 +68,6 @@ class Angular {
 				nDepth++;
 			sortByFi();
 		}
-		delete(anglesFileHandler);
 	}
 
 	bool sortByFi()
@@ -188,7 +187,7 @@ class Angular {
 		
 		auto start = std::chrono::high_resolution_clock::now();
 
-		//int stop_after = 50;
+		//int stop_after = 10;
 		while(angleCount > 0)
 		{
 			iterationCount++;
@@ -238,7 +237,7 @@ class Angular {
 					Scenter += CMatrix::Scenter;
 					SMcenter += CMatrix::dS*App::distance*App::distance;
 				}
-				if(angleStepsFileMode)// && !angleStepsLoadedFromFile)
+				if(angleStepsFileMode && !angleStepsLoadedFromFile)
 				{
 					auto tmpAS = new AngleStep(currentPhi, currentTheta, currentDPhi, currentDTheta);
 					angleStepsToSerialize.push_back(*tmpAS);
@@ -261,14 +260,12 @@ class Angular {
 				}
 			}
 			CMatrix::freeMem();
-			
 			/*
 			if(stop_after <= 0)
 			{
 				CDebugger::warn("FORCEFULLY STOPPING ITERATIONS");
 				break;
-			}
-			*/
+			}*/
 
 		}
 
@@ -302,7 +299,7 @@ class Angular {
 		CDebugger::log("Total body angle of the object = %le *pi radians.", totalBodyAngleSimple/M_PI);
 		CDebugger::writeToFile(time, "Total body angle of the object = %le *pi radians.", totalBodyAngleSimple/M_PI);
 		
-		if(angleStepsFileMode)// && !angleStepsLoadedFromFile)
+		if(angleStepsFileMode && !angleStepsLoadedFromFile)
 		{
 			CDebugger::log("WRITING ANGLES TO FILE");
 			SerializeAngleSteps(angleStepsToSerialize);

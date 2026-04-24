@@ -94,7 +94,8 @@ private:
     /// @return false if file absent or empty
     bool TryReadFile()
     {
-        std::ifstream file(App::anglesOutput, std::ios::ate);
+        std::string path = std::string(App::output_dir) + std::string(App::anglesOutput); 
+        std::ifstream file(path, std::ios::ate);
 
         if(!file.is_open())
         {
@@ -145,12 +146,8 @@ private:
         std::ifstream file(fullFileName);
         std::string line;
         long index = 0;
-        //char cline[20];
-        //file.getline(cline, 20);
-        //CDebugger::log("TEST: %s", cline);
         while(std::getline(file, line))
         {
-            //CDebugger::log("READING LINE: %s", line.c_str());
             if(!TryDeserializeAngleStep(line, &anglesContainer[index]))
             {
                 CDebugger::error("Couldn't deserialize AngleStep from file %s, line %d.\n", App::anglesOutput, index);
@@ -174,27 +171,21 @@ private:
         try
         {
             std::getline(ss, token, delimiter);
-            //CDebugger::log("FIRST NUMBER (PHI) IS: '%s'", token.c_str());
             phi = std::stod(token);
 
             std::getline(ss, token, delimiter);
-            //CDebugger::log("SECOND NUMBER (THETA) IS: '%s'", token.c_str());
             theta = std::stod(token);
 
             std::getline(ss, token, delimiter);
-            //CDebugger::log("THIRD NUMBER (DPHI) IS: '%s'", token.c_str());
             dphi = std::stod(token);
 
             std::getline(ss, token, delimiter);
-            //CDebugger::log("FOURTH NUMBER (DTHETA) IS: '%s'", token.c_str());
             dtheta = std::stod(token);
 
             // Clear the stream content
             ss.str("");   
             ss.clear();
 
-            //CDebugger::log("Deserialized angle step: phi=%f; theta=%f; dphi=%f; dtheta=%f",
-            //               phi, theta, dphi, dtheta);
             *angleStepAddress = new AngleStep(phi, theta, dphi, dtheta);
         }
         catch(...)

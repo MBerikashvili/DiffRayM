@@ -178,7 +178,7 @@ class CMatrix{
 		//long double nPhotsPerRadian = nPhots / (App::phi_width * App::theta_width);
 		if(CMatrix::dS/(App::phi_width * App::theta_width) < 1.e-4)
 		{
-			CDebugger::debug("TooSmall\n");
+			//CDebugger::debug("TooSmall\n");
 			return true;
 		}
 		
