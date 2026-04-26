@@ -14,6 +14,7 @@
 
 
 class Angular {
+	inline static int GlobalIterationCounter = 0;
     public:
 	double phi, theta, dphi, dtheta, nPhots, STot;
 	AngleStep *angles[1000000];
@@ -22,6 +23,7 @@ class Angular {
 	AnglesFileHandler* anglesFileHandler;
 	bool angleStepsLoadedFromFile = false;
 	bool angleStepsFileMode;
+	int anglesResreshPeriod = 6;
 
 	long iterationCount = 0;
 	
@@ -42,7 +44,8 @@ class Angular {
 		if(angleStepsFileMode)
 		{
 			anglesFileHandler = new AnglesFileHandler();
-			angleStepsLoadedFromFile = TryGetAnglesFromFile();
+			if(!MustRefreshAnglesInFile())
+				angleStepsLoadedFromFile = TryGetAnglesFromFile();
 		}
 
 		if(!angleStepsLoadedFromFile)
@@ -237,7 +240,7 @@ class Angular {
 					Scenter += CMatrix::Scenter;
 					SMcenter += CMatrix::dS*App::distance*App::distance;
 				}
-				if(angleStepsFileMode && !angleStepsLoadedFromFile)
+				if(angleStepsFileMode && MustRefreshAnglesInFile())
 				{
 					auto tmpAS = new AngleStep(currentPhi, currentTheta, currentDPhi, currentDTheta);
 					angleStepsToSerialize.push_back(*tmpAS);
@@ -260,8 +263,8 @@ class Angular {
 				}
 			}
 			CMatrix::freeMem();
-			/*
-			if(stop_after <= 0)
+			
+			/*if(stop_after <= 0)
 			{
 				CDebugger::warn("FORCEFULLY STOPPING ITERATIONS");
 				break;
@@ -299,11 +302,13 @@ class Angular {
 		CDebugger::log("Total body angle of the object = %le *pi radians.", totalBodyAngleSimple/M_PI);
 		CDebugger::writeToFile(time, "Total body angle of the object = %le *pi radians.", totalBodyAngleSimple/M_PI);
 		
-		if(angleStepsFileMode && !angleStepsLoadedFromFile)
+		if(angleStepsFileMode && MustRefreshAnglesInFile())
 		{
 			CDebugger::log("WRITING ANGLES TO FILE");
 			SerializeAngleSteps(angleStepsToSerialize);
 		}
+
+		Angular::GlobalIterationCounter++;
 	}
 
 
@@ -331,5 +336,11 @@ class Angular {
 		}
 		CDebugger::log("Angle steps successfully written to file");
 		delete(anglesFileHandler);
+	}
+
+	bool MustRefreshAnglesInFile()
+	{
+		// every 'anglesResreshPeriod' iterations
+		return !(Angular::GlobalIterationCounter % anglesResreshPeriod);
 	}
 };
