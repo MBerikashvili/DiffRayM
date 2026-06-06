@@ -7,6 +7,7 @@
 #include "../output/debugger.h"
 #include "../output/AnglesFileHandler.h"
 #include <vector>
+#include <algorithm>
 #include <chrono>
 #include <iomanip>
 #include <cmath>
@@ -314,6 +315,7 @@ class Angular {
 		if(angleStepsFileMode && MustRefreshAnglesInFile())
 		{
 			CDebugger::log("WRITING ANGLES TO FILE");
+			std::reverse(angleStepsToSerialize.begin(), angleStepsToSerialize.end());
 			SerializeAngleSteps(angleStepsToSerialize);
 		}
 
