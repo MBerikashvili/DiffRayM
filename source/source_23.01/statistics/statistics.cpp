@@ -48,7 +48,7 @@ double CStatistics::shouldInclude()
 	//printf("i=%d! (%d;%d) <= (%le;%le;%le;%le) \n",i, ip,it, rayPhi, App::AppDPhi, rayTheta, App::AppDTheta);
 	if(i < 0 || i > 225)
 	{
-		printf("i=%d! (%d;%d) <= (%Le;%Le;%Le) Something went not as intended\n",i, ip,it, rayTheta, App::AppDTheta, App::rayToObj.angle.z);
+		printf("i=%d! (%d;%d) <= (%Le;%e;%Le) Something went not as intended\n",i, ip,it, rayTheta, App::AppDTheta, App::rayToObj.angle.z);
 		exit(1);
 	}
 	if(!CStatistics::angles[i]->wasIncluded)

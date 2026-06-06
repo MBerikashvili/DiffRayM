@@ -15,9 +15,9 @@ class Output{
 	{
 		printf("Try to open\n");
 		isOpened = false;
-		char ffname[255];
-		sprintf(ffname, "%s/%s",App::output_dir, fname);
-		printf(ffname);
+		char ffname[4096];
+		snprintf(ffname, sizeof(ffname), "%s/%s",App::output_dir, fname);
+		printf("%s", ffname);
 		printf("\n%s\n",mode);
 		FP = fopen(ffname, mode);
 		if(FP)

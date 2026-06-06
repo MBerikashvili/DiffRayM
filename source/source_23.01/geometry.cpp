@@ -9,7 +9,7 @@ int *CGeometry::nRadiuses;
 double *CGeometry::inRadius;
 double **CGeometry::outer_radius;
 
-int CGeometry::readSectors(char fpattern[500])
+int CGeometry::readSectors(const char fpattern[500])
 {
 	CGeometry::nSectors = App::nSectors;
 	CGeometry::nRadiuses = new int[CGeometry::nSectors];

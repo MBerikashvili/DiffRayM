@@ -272,7 +272,7 @@ int CSolver::getPointsSectors()
 
 	FILE *FST;
 
-	char fname2[255];
+	char fname2[300];
 
 	sprintf(fname2, "%s/points_stat.dat",App::output_dir);
 
@@ -461,7 +461,7 @@ int CSolver::getPoints()
 
 	if(App::isStatMode)
 	{
-		char fname[255];
+		char fname[300];
 
 		//printvec(ray.start);
 		//printvec(ray.angle);
@@ -470,7 +470,7 @@ int CSolver::getPoints()
 		FP = fopen(fname,"w+");
 		for(i=0;i<CSolver::npoints;i++)
 		{
-			fprintf(FP,"Sector: %d/%d (%d - %lf); Layer: %d/%d; Point: %Le;%Le;%Le; R=%le\n", CSolver::points[i].sec_p, CSolver::points[i].sec_n,CSolver::points[i].is,CSolver::points[i].phi, CSolver::points[i].lay_p, CSolver::points[i].lay_n, CSolver::points[i].point.x, CSolver::points[i].point.y, CSolver::points[i].point.z,CSolver::points[i].R);
+			fprintf(FP,"Sector: %d/%d (%d - %lf); Layer: %d/%d; Point: %Le;%Le;%Le; R=%Le\n", CSolver::points[i].sec_p, CSolver::points[i].sec_n,CSolver::points[i].is,CSolver::points[i].phi, CSolver::points[i].lay_p, CSolver::points[i].lay_n, CSolver::points[i].point.x, CSolver::points[i].point.y, CSolver::points[i].point.z,CSolver::points[i].R);
 			//printvec(CSolver::points[i].point);
 		}
 		fclose(FP);

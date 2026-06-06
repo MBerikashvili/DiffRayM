@@ -57,8 +57,8 @@ class PrtIsophote: public Output {
 
 	static void plot()
 	{
-		char dirname[255];
-		sprintf(dirname,"%s/plots",App::output_dir);
+		char dirname[300];
+		snprintf(dirname, sizeof(dirname),"%s/plots",App::output_dir);
 		DIR *st;
 
 		st = opendir(dirname);

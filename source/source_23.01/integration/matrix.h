@@ -132,7 +132,7 @@ class CMatrix{
 
 	static bool getDelta(long double nPhots)
 	{
-		CDebugger::debug("getDelta: %Le of %le\n",CMatrix::FFac, nPhots);
+		//CDebugger::debug("getDelta: %Le of %le\n",CMatrix::FFac, nPhots);
 		for(int i = 0; i < 9; i++)
 		{
 			double deltaHere = fabs(1.e-50 + CMatrix::rays[i]->Fi - CMatrix::FFac)/(CMatrix::FFac + 1.e-45);

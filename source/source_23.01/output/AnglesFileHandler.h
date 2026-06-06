@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 
+
 #include "output.h"
 #include "../integration/AngleStep.h"
 #include "../integration/angular.h"
@@ -53,7 +54,7 @@ public:
         // check if file is available
         bool fileCanBeWritten = true;// TryWriteFile();
         
-        Output* anglesOutput = new Output(App::anglesOutput, "w+");
+        Output* anglesOutput = new Output(App::anglesOutput, "w");
 
         if(!fileCanBeWritten)
         {
@@ -76,7 +77,7 @@ public:
                 break;
             }
 
-            auto success = anglesOutput->prt("%s", angleStepString.c_str());
+            anglesOutput->prt("%s", angleStepString.c_str());
 
             ++angleStep;
         }

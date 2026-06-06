@@ -74,6 +74,7 @@ bool App::isIrregularSource = false;
 
 char App::anglesOutput[255];
 bool App::anglesFileMode;
+bool App::anglesLogToFile;
 char App::anglesLogsDirectory[255];
 
 bool App::addApperture(double phi, double theta, double dphi, double dtheta){
@@ -392,6 +393,16 @@ bool App::readCommands()
 			else if(strcmp(commands[1], "angles_logs") == 0)
 			{
 				sscanf(commands[2], "%s", &App::anglesLogsDirectory);
+
+				if(strcmp(commands[3],"on") == 0)
+				{
+					App::anglesLogToFile = true;
+				}
+				else
+				{
+					App::anglesLogToFile = false;
+					printf("Angles log to file mode off");
+				}
 			}
 		}
 		else

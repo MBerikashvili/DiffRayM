@@ -47,27 +47,44 @@ void CDebugger::log(const char* format, ...)
 	}
 }
 
+void CDebugger::log(bool copyToFile, std::time_t time, const char* format, ...)
+{
+	va_list args;
+	if(CDebugger::level >= 1)
+	{
+		va_start(args,format);
+		printf("LOG: ");
+		vprintf(format, args);
+		printf("\n");
+		va_end(args);
+	}
+	if(copyToFile)
+	{
+		CDebugger::writeToFile(time, format, args);
+	}
+}
+
 void CDebugger::warn(const char* format, ...)
 {
 	if(CDebugger::level >= 0)
 	{
-		va_list ap;
-		va_start(ap,format);
+		va_list args;
+		va_start(args,format);
 		printf("WARN: ");
-		vprintf(format, ap);
+		vprintf(format, args);
 		printf("\n");
-		va_end(ap);
+		va_end(args);
 	}
 }
 
 void CDebugger::error(const char *format, ...)
 {
-	va_list ap;
-	va_start(ap,format);
+	va_list args;
+	va_start(args,format);
 	printf("ERROR: ");
-	vprintf(format, ap);
+	vprintf(format, args);
 	printf("\n");
-	va_end(ap);
+	va_end(args);
 }
 
 void CDebugger::writeToFile(std::time_t time, const char* format, ...) {
