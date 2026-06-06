@@ -38,8 +38,8 @@ int CDiffRay::initializePoints()
 	}
 
 	FILE *FPNTS;
-	char fname[255];
-	sprintf(fname, "%s/%s",App::input_dir,App::pointsFile);
+	char fname[510];
+	snprintf(fname, sizeof(fname), "%s/%s", App::input_dir, App::pointsFile);
 	FPNTS = fopen(fname, "r");
 	if(FPNTS == NULL) 
 	{
@@ -78,7 +78,7 @@ int CDiffRay::getPointsProcessed()
 		return 0;
 	}
 	// get file to flush results
-	char cfilename[255];
+	char cfilename[555];
 	sprintf(cfilename, "%s/%s", App::output_dir, App::fluxesOutput);
 	FILE *CUM_CONT_FILE;
 	
@@ -100,7 +100,7 @@ int CDiffRay::getPointsProcessed()
 	i--;
 	fclose(CUM_CONT_FILE);
 	FILE *FBREAKHIST;
-	char fbreakname[255];
+	char fbreakname[314];
 	sprintf(fbreakname, "%s/breakouts.dat", App::output_dir);
 	FBREAKHIST = fopen(fbreakname, "a+");
 	fprintf(FBREAKHIST, "%d %s\n", i, cfilename);
@@ -165,8 +165,8 @@ int CDiffRay::runDiffRay(bool usePoints, int nPoint)
 		if(usePoints) 
 		{
 			CDebugger::debug("nPoint: %d\n", nPoint);
-			char cfilename[255];
-			sprintf(cfilename, "%s/%s", App::output_dir, App::fluxesOutput);
+			char cfilename[555];
+			snprintf(cfilename, sizeof(cfilename), "%s/%s", App::output_dir, App::fluxesOutput);
 			FILE *CUM_CONT_FILE;
 			if(nPoint < 1) 
 			{
@@ -221,7 +221,7 @@ int CDiffRay::runDiffRay(bool usePoints, int nPoint)
 			
 		if(App::CalcLines)
 		{
-			char fname[255];
+			char fname[314];
 			sprintf(fname,"%s/abmass.txt",App::output_dir);
 			FILE *FP;
 
@@ -263,8 +263,8 @@ int CDiffRay::runDiffRay(bool usePoints, int nPoint)
 		//if(App::CalcGrains)
 		{
 			FILE* GRAIN_FILE;
-			char grain_fname[255];
-			sprintf(grain_fname, "%s/grains_weighted.dat",App::output_dir);
+			char grain_fname[323];
+			sprintf(grain_fname, "%s/grains_weighted.dat", App::output_dir);
 			GRAIN_FILE = fopen(grain_fname, "w+");
 			for(int i=0;i<GrainTemp::nBins;i++)
 			{
@@ -276,10 +276,10 @@ int CDiffRay::runDiffRay(bool usePoints, int nPoint)
 		if(CContinuum::nbands > 0)
 		{
 
-			char fname[255];
-			char fnameFmt[255];
-			char fname_corr[255];
-			char fnameFmt_corr[255];
+			char fname[313];
+			char fnameFmt[323];
+			char fname_corr[320];
+			char fnameFmt_corr[330];
 			
 			sprintf(fname,"%s/bands.txt",App::output_dir);
 			sprintf(fnameFmt,"%s/bands_formatted.txt",App::output_dir);
@@ -291,8 +291,8 @@ int CDiffRay::runDiffRay(bool usePoints, int nPoint)
 			FILE *bandFileFmt_cor;
 				
 			//printf("%s\n", fname);
-			char strnm1[255];
-			char strnm2[255];
+			char strnm1[300];
+			char strnm2[300];
 			sprintf(strnm1,"mips24_app%d.dat",App::iApp);
 			sprintf(strnm2,"mips70_app%d.dat",App::iApp);
 			
@@ -325,8 +325,8 @@ int CDiffRay::runDiffRay(bool usePoints, int nPoint)
 				int iT = cBand.nAnus-1;
 				double trans = 1.0;
 
-				char bandsFNm[255];
-				char bandsDir[255];
+				char bandsFNm[810];
+				char bandsDir[310];
 				FILE *bandFile;
 				if(App::printBands) 
 				{
@@ -408,7 +408,7 @@ int CDiffRay::runDiffRay(bool usePoints, int nPoint)
 
 	FILE *AS;
 
-	char fnamedas[255];
+	char fnamedas[331];
 	sprintf(fnamedas,"%s/cont_distribution_saved.txt",App::output_dir);
 
 	AS = fopen(fnamedas, "w+");
@@ -564,8 +564,8 @@ int CDiffRay::runDiffRay(bool usePoints, int nPoint)
 	CDebugger::debug("Abunds selected: %d\n",nAbunds);
 	i = 0;
 	int abundIp = 0;
-	char fnameda[255];
-	sprintf(fnameda,"%s/abund_distribution.txt",App::output_dir);
+	char fnameda[326];
+	sprintf(fnameda,"%s/abund_distribution.txt", App::output_dir);
 	
 	FILE *AbundF;
 
@@ -684,7 +684,7 @@ int CDiffRay::runDiffRay(bool usePoints, int nPoint)
 	
 	i = 0;
 	int linesIp = 0;
-	char fnameel[255];
+	char fnameel[328];
 	sprintf(fnameel,"%s/lineems_distribution.txt",App::output_dir);
 	
 	FILE *LineEmF;
@@ -788,7 +788,7 @@ int CDiffRay::runDiffRay(bool usePoints, int nPoint)
 
 	i = 0;
 
-	char fnametmp[255];
+	char fnametmp[330];
 	sprintf(fnametmp,"%s/graintemp_distribution.txt",App::output_dir);
 	
 	FILE *GrainTempF;
@@ -878,8 +878,8 @@ int CDiffRay::runDiffRay(bool usePoints, int nPoint)
 
 	i = 0;
 
-	char fnameemit[255];
-	sprintf(fnameemit,"%s/bandsemis_distribution.txt",App::output_dir);
+	char fnameemit[330];
+	sprintf(fnameemit, "%s/bandsemis_distribution.txt", App::output_dir);
 	
 	FILE *BandsEmisF;
 	CDebugger::debug("TC: %d\n",CLine::iStat);
@@ -1015,7 +1015,7 @@ int CDiffRay::runDiffRay(bool usePoints, int nPoint)
 
 	i = 0;
 
-	char fnamephys[255];
+	char fnamephys[325];
 	sprintf(fnamephys,"%s/phys_distribution.txt",App::output_dir);
 	int ipc = 0;
 	FILE *OverviewF;

@@ -11,7 +11,6 @@ public:
 	static void write(const char* format, ...);
 	static void debug(const char* format, ...);
 	static void log(const char* format, ...);
-	static void log(bool copyToFile, time_t time, const char* format, ...);
 	static void warn(const char* format, ...);
 	static void error(const char* format, ...);
 

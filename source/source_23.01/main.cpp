@@ -62,7 +62,6 @@ int main(int argc, char **argv)
 	CLine::readen = 0;
 	printf("READING LINES\n");
 
-	double **resarr;
 	char ovrflname[500];
 	char flname[500];
 	char opflname[500];
@@ -230,7 +229,7 @@ int main(int argc, char **argv)
 	else
 	{
 		printf("Calculate in apps\n");
-		char chappertures[255];
+		char chappertures[300];
 		sprintf(chappertures, "%s/appertures.dat",  App::output_dir_in);
 		FILE *FAPPS = fopen(chappertures, "w+");
 		for(int i=0;i<App::nApps;i++)

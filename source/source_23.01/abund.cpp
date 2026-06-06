@@ -128,7 +128,7 @@ int Abund::getElementList(int irow,char str[1000])
 		int iel = 0;
 
 		
-		while (sscanf(data, "%s%n", &abel, &offset) == 1)
+		while (sscanf(data, "%s%n", abel, &offset) == 1)
     	{
     		data += offset;
     			

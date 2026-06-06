@@ -204,7 +204,6 @@ class Angular {
 			double currentDTheta = angles[angleCount-1]->dtheta;
 
 			removeLastPoint();
-			CDebugger::debug("Last point removed");
 			//now should setup matrix
 			CMatrix::setup(currentPhi, currentTheta, currentDPhi, currentDTheta);
 			bool bWithStat = false;
@@ -272,29 +271,45 @@ class Angular {
 
 		auto end = std::chrono::high_resolution_clock::now();
 		auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
-		std::time_t time = std::chrono::system_clock::to_time_t(end);
+		
 
-		CDebugger::log(copyLogsToFile, time, "GLOBAL ITERATION NUMBER: %d", Angular::GlobalIterationCounter);
+		CDebugger::log("GLOBAL ITERATION NUMBER: %d", Angular::GlobalIterationCounter);		
 
 		if(angleStepsFileMode)
 		{
-			CDebugger::log(copyLogsToFile, time,  "MODE: ACCELERATED\n");
-			CDebugger::log(copyLogsToFile, time, "NUMBER OF ANGLES LOADED FROM FILE: %d", numberOfAnglesInitiallyLoaded);
+			CDebugger::log("MODE: ACCELERATED\n");
+			CDebugger::log("NUMBER OF ANGLES LOADED FROM FILE: %d", numberOfAnglesInitiallyLoaded);
 		}
 		else
 		{
-			CDebugger::log(copyLogsToFile, time, "MODE: SLOW\n");
+			CDebugger::log("MODE: SLOW\n");
 		}
 
-		CDebugger::log(copyLogsToFile, time, "NUMBER OF PROCESSED ANGLES: %d", numberOfAnglesProcessed);
+		CDebugger::log("NUMBER OF PROCESSED ANGLES: %d", numberOfAnglesProcessed);
+		CDebugger::log("NUMBER OF ITERATIONS PERFORMED: %ld", iterationCount);
+		CDebugger::log("TIME PASSED FOR ITERATIONS: %d s.", duration.count());
+		CDebugger::log("TIME FOR ONE ANGLE: %le ms", 1000.0 * float(duration.count())/float(numberOfAnglesProcessed));
+		CDebugger::log("Total body angle of the object = %le *pi radians.", totalBodyAngle/M_PI);
 
-		CDebugger::log(copyLogsToFile, time, "NUMBER OF ITERATIONS PERFORMED: %ld", iterationCount);
-
-		CDebugger::log(copyLogsToFile, time, "TIME PASSED FOR ITERATIONS: %d s.", duration.count());
-
-		CDebugger::log(copyLogsToFile, time, "TIME FOR ONE ANGLE: %le ms", 1000.0 * float(duration.count())/float(numberOfAnglesProcessed));
-
-		CDebugger::log(copyLogsToFile, time, "Total body angle of the object = %le *pi radians.", totalBodyAngle/M_PI);
+		if(copyLogsToFile)
+		{
+			std::time_t time = std::chrono::system_clock::to_time_t(end);
+			CDebugger::writeToFile(time, "GLOBAL ITERATION NUMBER: %d", Angular::GlobalIterationCounter);
+			if(angleStepsFileMode)
+			{
+				CDebugger::writeToFile(time, "MODE: ACCELERATED\n");
+				CDebugger::writeToFile(time, "NUMBER OF ANGLES LOADED FROM FILE: %d", numberOfAnglesInitiallyLoaded);
+			}
+			else
+			{
+				CDebugger::writeToFile(time, "MODE: SLOW\n");
+			}
+			CDebugger::writeToFile(time, "NUMBER OF PROCESSED ANGLES: %d", numberOfAnglesProcessed);
+			CDebugger::writeToFile(time, "NUMBER OF ITERATIONS PERFORMED: %ld", iterationCount);
+			CDebugger::writeToFile(time, "TIME PASSED FOR ITERATIONS: %d s.", duration.count());
+			CDebugger::writeToFile(time, "TIME FOR ONE ANGLE: %.0lf ms", 1000.0 * float(duration.count())/float(numberOfAnglesProcessed));
+			CDebugger::writeToFile(time, "Total body angle of the object = %lf *pi radians.", totalBodyAngle/M_PI);
+		}
 		
 		if(angleStepsFileMode && MustRefreshAnglesInFile())
 		{

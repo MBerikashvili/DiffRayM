@@ -135,7 +135,7 @@ int CIntegration::doCalc()
 	App::rayIntegration = App::rayToObj;
 	double lumfactor = 1.0;
 				
-	long long sum = 0;
+	//long long sum = 0;
 	CIntegration::memPerGeom = 0;
 	CIntegration::memPerRT = 0;
 
@@ -165,19 +165,19 @@ int CIntegration::doCalc()
 	else
 	{
 		//printf("nPhi: %d\n", CIntegration::nPhi);
-		double dphi = App::phi_width/CIntegration::nPhi;
-		double dtheta = App::theta_width/CIntegration::nTheta;
+		//double dphi = App::phi_width/CIntegration::nPhi;
+		//double dtheta = App::theta_width/CIntegration::nTheta;
 		CDebugger::debug("nPhi: %d; nTheta: %d\n",CIntegration::nPhi,CIntegration::nTheta);
-		double phi = App::AppDPhi - (App::phi_width-dphi)/2;
-		double theta = App::AppDTheta - (App::theta_width-dtheta)/2;
+		//double phi = App::AppDPhi - (App::phi_width-dphi)/2;
+		//double theta = App::AppDTheta - (App::theta_width-dtheta)/2;
 		
-		double phi_max = App::AppDPhi + (App::phi_width-dphi)/2;
-		double theta_max = App::AppDTheta + (App::theta_width-dtheta)/2;			
+		//double phi_max = App::AppDPhi + (App::phi_width-dphi)/2;
+		//double theta_max = App::AppDTheta + (App::theta_width-dtheta)/2;			
 
 		double STOT = 0.0;
-		int iskip_phi = 0;
-		int iskip_theta = 0;
-		int skip_param = 5;
+		//int iskip_phi = 0;
+		//int iskip_theta = 0;
+		//int skip_param = 5;
 		CDebugger::debug("Check need iter: %b, %le\n", App::isIrregularSource, CGeometry::inRadius[0]);
 		printf("iterateSourceCheck\n");
 		fflush(stdout);

@@ -140,7 +140,7 @@ vector3* intersectSphere(TRay ray, long double radius, vector3 res[2])
 		
 		FST = fopen(fname2,"a+");
 		
-		fprintf(FST, "Radius: %le; Ray: start [%Le;%Le;%Le];[%Le;%Le] b=%Le;c=%Le; D=%Le\n",radius, ray.start.x, ray.start.y, ray.start.z, ray.angle.y, ray.angle.z, b, c, D);
+		fprintf(FST, "Radius: %Le; Ray: start [%Le;%Le;%Le];[%Le;%Le] b=%Le;c=%Le; D=%Le\n",radius, ray.start.x, ray.start.y, ray.start.z, ray.angle.y, ray.angle.z, b, c, D);
 
 		fclose(FST);
 
@@ -206,9 +206,9 @@ vector3* intersectRayWithCone(TRay ray, double theta, vector3 res[2])
 
 	if(App::isStatMode)
 	{
-		char fname2[255];
+		char fname2[319];
 
-		sprintf(fname2, "%s/points_stat.dat",App::output_dir);
+		sprintf(fname2, "%s/points_stat.dat", App::output_dir);
 
 		FILE *FST;
 		
@@ -313,11 +313,6 @@ THalfplane createFromAngles(double axis_phi, double axis_theta, double rot_phi)
 	result.lpoint = axis;
 	result.side_des = sign(acos(rot_phi));
 	return result;
-}
-
-vector3 intersectHalfplane(TRay ray, THalfplane sector)
-{
-
 }
 
 //Closer to real geometry of object:

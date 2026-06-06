@@ -47,23 +47,6 @@ void CDebugger::log(const char* format, ...)
 	}
 }
 
-void CDebugger::log(bool copyToFile, std::time_t time, const char* format, ...)
-{
-	va_list args;
-	if(CDebugger::level >= 1)
-	{
-		va_start(args,format);
-		printf("LOG: ");
-		vprintf(format, args);
-		printf("\n");
-		va_end(args);
-	}
-	if(copyToFile)
-	{
-		CDebugger::writeToFile(time, format, args);
-	}
-}
-
 void CDebugger::warn(const char* format, ...)
 {
 	if(CDebugger::level >= 0)
@@ -87,27 +70,28 @@ void CDebugger::error(const char *format, ...)
 	va_end(args);
 }
 
-void CDebugger::writeToFile(std::time_t time, const char* format, ...) {
-        va_list args;
-        va_start(args, format);
-        int size = vsnprintf(nullptr, 0, format, args);
-        va_end(args);
+void CDebugger::writeToFile(std::time_t time, const char* format, ...) 
+{
+    va_list args;
+    va_start(args, format);
+    int size = vsnprintf(nullptr, 0, format, args);
+    va_end(args);
 
-        if (size <= 0) return;
+    if (size <= 0) return;
 
-        std::vector<char> buffer(size + 1);
-        va_start(args, format);
-        vsnprintf(buffer.data(), buffer.size(), format, args);
-        va_end(args);
+    std::vector<char> buffer(size + 1);
+    va_start(args, format);
+    vsnprintf(buffer.data(), buffer.size(), format, args);
+    va_end(args);
 
-		std::stringstream filename;
-		filename << std::put_time(std::localtime(&time), "/%d-%m-%Y %H:%M:%S");
+    std::stringstream filename;
+    filename << std::put_time(std::localtime(&time), "/%d-%m-%Y %H:%M:%S");
 
-		std::string path = std::string(App::anglesLogsDirectory) + filename.str();
+    std::string path = std::string(App::anglesLogsDirectory) + filename.str();
 
-        std::ofstream file(path, std::ios::app);
-        if (file.is_open()) {
-            file << buffer.data() << std::endl;
-            file.close();
-        }
+    std::ofstream file(path, std::ios::app);
+    if (file.is_open()) {
+        file << buffer.data() << std::endl;
+        file.close();
     }
+}

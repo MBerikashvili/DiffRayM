@@ -22,7 +22,7 @@ public:
 	static bool CalcGrainTemp;
 	static bool CalcOverviews;
 	static double age;
-	static char output_dir[255];
+	static char output_dir[300];
 	static char output_dir_in[255];
 	static char input_dir[255];
 	static char data_base[255];

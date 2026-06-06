@@ -35,7 +35,7 @@ double App::maxPhiCen = 0.;
 double App::minThetaCen = 0.;
 double App::maxThetaCen = 0.;
 
-char App::output_dir[255];
+char App::output_dir[300];
 char App::output_dir_in[255];
 char App::input_dir[255];
 char App::commands_path[255];
@@ -123,7 +123,7 @@ bool App::initAperture(int i)
 
 	//char path[500];
 
-	sprintf(App::output_dir,"%s/app_%d",App::output_dir_in,i);
+	snprintf(App::output_dir, sizeof(App::output_dir), "%s/app_%d", App::output_dir_in, i);
 
 	CDebugger::debug("App to %s\n",App::output_dir);
 
@@ -197,7 +197,7 @@ bool App::readCommands()
 			else
 			if(strcmp(commands[1],"file") == 0)
 			{
-				sscanf(commands[2],"%s",&App::pointsFile);
+				sscanf(commands[2],"%s",App::pointsFile);
 				App::pointsSource = true;
 				sscanf(commands[3],"%d",&App::nSkipPoints);
 			}	
@@ -312,7 +312,7 @@ bool App::readCommands()
 				char chlab[14];
 				//sscanf(commands[2],"%11[0-9a-zA-Z ]",&chlab);
 				sprintf(chlab, "%s", commands[2]);
-				printf("CHLAB: %s\n");
+				printf("CHLAB: %s\n", chlab);
 				CIsophotes::addIsophote(ISOPHOTE_LINE, 0,0)->setLine(chlab);
 			}
 			else
@@ -344,8 +344,8 @@ bool App::readCommands()
 			printf("print\n");
 			if(strcmp(commands[1],"directory") == 0)
 			{
-				sscanf(commands[2],"%s",&App::output_dir);
-				sscanf(commands[2],"%s",&App::output_dir_in);
+				sscanf(commands[2],"%s",App::output_dir);
+				sscanf(commands[2],"%s",App::output_dir_in);
 			}
 			else
 			if(strcmp(commands[1],"bands") == 0)
@@ -355,7 +355,7 @@ bool App::readCommands()
 			else
 			if(strcmp(commands[1], "fluxes") == 0)
 			{
-				sscanf(commands[2], "%s", &App::fluxesOutput);
+				sscanf(commands[2], "%s", App::fluxesOutput);
 			}
 			else
 			if(strcmp(commands[1], "loglevel") == 0)
@@ -378,7 +378,7 @@ bool App::readCommands()
 			}
 			else if(strcmp(commands[1], "angles") == 0)
 			{
-				sscanf(commands[2], "%s", &App::anglesOutput);
+				sscanf(commands[2], "%s", App::anglesOutput);
 				
 				if(strcmp(commands[3],"on") == 0)
 				{
@@ -392,7 +392,7 @@ bool App::readCommands()
 			}
 			else if(strcmp(commands[1], "angles_logs") == 0)
 			{
-				sscanf(commands[2], "%s", &App::anglesLogsDirectory);
+				sscanf(commands[2], "%s", App::anglesLogsDirectory);
 
 				if(strcmp(commands[3],"on") == 0)
 				{
@@ -411,17 +411,17 @@ bool App::readCommands()
 			printf("input\n");
 			if(strcmp(commands[1],"location") == 0 || strcmp(commands[1],"directory") == 0) //for compability with DiffRay v2.0
 			{
-				sscanf(commands[2],"%s",&App::input_dir);
+				sscanf(commands[2],"%s",App::input_dir);
 			}
 			else
 			if(strcmp(commands[1],"database") == 0) //for compability with DiffRay v2.0
 			{
-				sscanf(commands[2],"%s",&App::data_base);
+				sscanf(commands[2],"%s",App::data_base);
 			}
 			else
 			if(strcmp(commands[1],"bands") == 0) //for compability with DiffRay v2.0
 			{
-				sscanf(commands[2],"%s",&App::data_bands);
+				sscanf(commands[2],"%s",App::data_bands);
 			}
 			printf("DIR: %s\n",App::input_dir);
 		}

@@ -121,8 +121,6 @@ THalfplane create(TPlane P, vector3 point1, int side_des = 0);
 
 THalfplane createFromAngles(double axis_phi, double axis_theta, double rot_phi);
 
-vector3 intersectHalfplane(TRay ray, THalfplane sector);
-
 //Closer to real geometry of object:
 //Center of object always at zero
 //So in fact half-plane is only defined by phi

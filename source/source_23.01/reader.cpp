@@ -37,7 +37,6 @@ char** CReader::read_commands(FILE *MF)
 		command_part = strtok(string," ,;-\t\r\n");
 		int i=0;
 		result = new char*[10];
-		bool isQuoted = false;
 		
 		while(command_part != NULL)
 		{
@@ -127,8 +126,6 @@ printf("OK1!!!!\n");
 	char *line;
 	line = new char[maxsize];
 printf("OK2!!!!\n");
-	//result = new double*[num];
-	double val;
 	
 	int irows = 0;
 	while(irows<nskiprows && !feof(MF))
