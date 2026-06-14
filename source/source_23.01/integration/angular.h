@@ -24,7 +24,7 @@ class Angular {
 	bool angleStepsLoadedFromFile = false;
 	int numberOfAnglesInitiallyLoaded = 0;
 	bool angleStepsFileMode;
-	int anglesRefreshPeriod = 2;
+	int anglesRefreshPeriod = 6;
 	bool copyLogsToFile;
 
 	long iterationCount = 0;
